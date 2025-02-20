@@ -19,7 +19,7 @@ ElfinURL is a lightweight and efficient URL shortening web application. It allow
 ## NOTE
 - This is a project with the intent to further undestand the .NET ecosystem.
 - This will be a Learning project
-- The goal is be proficient in Web Api and HTTP protocols alog with Blazor
+- The goal is be proficient in Web Api and HTTP protocols along with Blazor
 - I will Alot 2-3 months time for this
 - This was written before starting this project
 - Start Time: February 21, 2025 @12:43 am
