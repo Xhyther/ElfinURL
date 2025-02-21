@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ElfinURL.DB;
 
-public class DBContext : DbContext
+public class ElfinDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
-    public DBContext(DbContextOptions<DbContext> options) : base(options) { }
+    public ElfinDbContext(DbContextOptions<ElfinDbContext> options) : base(options) { }
     
-    public DbSet<Shorter> Shorters => Set<Shorter>();
+    public DbSet<ShorterURL> ShorterURLs { get; set; }
 }

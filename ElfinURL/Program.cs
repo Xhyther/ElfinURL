@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using ElfinURL.DB;
+using ElfinURL.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ElfinURL;
 
@@ -10,7 +13,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddDbContext<DbContext>(opt => opt.UseInMemoryDatabase("ElfinURL"));
+        builder.Services.AddDbContext<ElfinDbContext>(opt => opt.UseInMemoryDatabase("ElfinURL"));
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
@@ -52,11 +55,63 @@ public class Program
         }
 
         var shorten = app.MapGroup("/shorten");
-        shorten.MapGet("/", () => "Index / Home Page");
-        shorten.MapGet("/{id}", () => "Specfic Link with ID");
-        shorten.MapPost("/{longURL}", () => "Add New Link");
-        shorten.MapPut("/{id}", () => "Update Link");
-        shorten.MapDelete("/{id}", () => "Delete Link");
+
+        // Get Home/Index
+        shorten.MapGet("/", () => "Welcome to ElfinURL!");
+
+        // Get a specific shortened URL by short code
+        shorten.MapGet("/{shortCode}", async (string shortCode, [FromServices] ElfinDbContext db) =>
+        {
+            var url = await db.ShorterURLs.FirstOrDefaultAsync(u => u.ShortCode == shortCode);
+            return url != null ? Results.Ok(url) : Results.NotFound();
+        });
+
+        // Create a new shortened URL
+        shorten.MapPost("/", async (string originalUrl, [FromServices] ElfinDbContext db) =>
+        {
+            if (string.IsNullOrWhiteSpace(originalUrl))
+                return Results.BadRequest("Original URL is required.");
+
+            // Generate a short code (for example, using part of a GUID)
+            var shortCode = Guid.NewGuid().ToString("N").Substring(0, 6);
+
+            var newUrl = new ShorterURL
+            {
+                OriginalUrl = originalUrl,
+                ShortCode = shortCode
+            };
+
+            db.ShorterURLs.Add(newUrl);
+            await db.SaveChangesAsync();
+
+            return Results.Created($"/shorten/{shortCode}", newUrl);
+        });
+
+        // Update a shortened URL (for example, update the OriginalUrl)
+        shorten.MapPut("/{id:int}", async (int id, string newOriginalUrl, [FromServices] ElfinDbContext db) =>
+        {
+            var url = await db.ShorterURLs.FindAsync(id);
+            if (url == null)
+                return Results.NotFound();
+
+            url.OriginalUrl = newOriginalUrl;
+            await db.SaveChangesAsync();
+
+            return Results.Ok(url);
+        });
+
+        // Delete a shortened URL by id
+        shorten.MapDelete("/{id:int}", async (int id, [FromServices] ElfinDbContext db) =>
+        {
+            var url = await db.ShorterURLs.FindAsync(id);
+            if (url == null)
+                return Results.NotFound();
+
+            db.ShorterURLs.Remove(url);
+            await db.SaveChangesAsync();
+
+            return Results.NoContent();
+        });
 
        
        
