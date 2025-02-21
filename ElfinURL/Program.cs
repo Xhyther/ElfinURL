@@ -20,18 +20,18 @@ public class Program
             options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "ToDo API",
-                Description = "An ASP.NET Core Web API for managing ToDo items",
-                TermsOfService = new Uri("https://example.com/terms"),
+                Title = "ElfinURL API",
+                Description = "A URL Shortener API built with ASP.NET Core Minimal API",
+                TermsOfService = new Uri("https://yourdomain.com/terms"),
                 Contact = new OpenApiContact
                 {
-                    Name = "Example Contact",
-                    Url = new Uri("https://example.com/contact")
+                    Name = "Your Name",
+                    Url = new Uri("https://yourdomain.com/contact")
                 },
                 License = new OpenApiLicense
                 {
-                    Name = "Example License",
-                    Url = new Uri("https://example.com/license")
+                    Name = "MIT License",
+                    Url = new Uri("https://opensource.org/licenses/MIT")
                 }
             });
         });
@@ -58,6 +58,7 @@ public class Program
         shorten.MapPut("/{id}", () => "Update Link");
         shorten.MapDelete("/{id}", () => "Delete Link");
 
+       
        
         app.UseHttpsRedirection();
         app.UseAuthorization();
