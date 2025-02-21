@@ -54,7 +54,7 @@ public class Program
         var shorten = app.MapGroup("/shorten");
         shorten.MapGet("/", () => "Index / Home Page");
         shorten.MapGet("/{id}", () => "Specfic Link with ID");
-        shorten.MapPost("/{string}", () => "Add New Link");
+        shorten.MapPost("/{longURL}", () => "Add New Link");
         shorten.MapPut("/{id}", () => "Update Link");
         shorten.MapDelete("/{id}", () => "Delete Link");
 
